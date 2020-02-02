@@ -88,6 +88,11 @@ pub trait RObject: Debug {
   fn to_json(&self) -> RTDResult<String>;
 }
 
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct Extra {
+    pub tag: Option<String>,
+}
+
 pub trait RFunction: Debug + RObject {}
 
 

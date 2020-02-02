@@ -1,6 +1,7 @@
 {% if first_write %}
 use crate::types::*;
 use crate::errors::*;
+use crate::types::_common::Extra;
 {% endif %}
 
 {% if token.type_ == "Trait" %}
