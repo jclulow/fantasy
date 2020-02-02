@@ -83,6 +83,7 @@ pub fn from_json<'a, T>(json: &'a str) -> RTDResult<T> where T: serde::de::Deser
 pub trait RObject: Debug {
   #[doc(hidden)]
   fn td_name(&self) -> &'static str;
+  fn td_tag(&self) -> Option<&str>;
   /// Return td type to json string
   fn to_json(&self) -> RTDResult<String>;
 }
@@ -92,11 +93,13 @@ pub trait RFunction: Debug + RObject {}
 
 impl<'a, RObj: RObject> RObject for &'a RObj {
   fn td_name(&self) -> &'static str { (*self).td_name() }
+  fn td_tag(&self) -> Option<&str> { (*self).td_tag() }
   fn to_json(&self) -> RTDResult<String> { (*self).to_json() }
 }
 
 impl<'a, RObj: RObject> RObject for &'a mut RObj {
   fn td_name(&self) -> &'static str { (**self).td_name() }
+  fn td_tag(&self) -> Option<&str> { (**self).td_tag() }
   fn to_json(&self) -> RTDResult<String> { (**self).to_json() }
 }
 

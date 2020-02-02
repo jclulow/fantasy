@@ -5,6 +5,9 @@ pub struct {{struct_name}} {
   #[doc(hidden)]
   #[serde(rename(serialize = "@type", deserialize = "@type"))]
   td_name: String,
+  #[doc(hidden)]
+  #[serde(rename(serialize = "@extra", deserialize = "@extra"))]
+  td_tag: Option<String>,
   {% for field in token.arguments %}/// {{field.description}}
   {% if field.sign_name == 'type' %}#[serde(rename(serialize = "type", deserialize = "type"))] {% endif %}{{field.sign_name | td_safe_field}}: {{td_arg(arg=field, token=token)}},
   {% endfor %}
@@ -12,6 +15,9 @@ pub struct {{struct_name}} {
 
 impl RObject for {{struct_name}} {
   #[doc(hidden)] fn td_name(&self) -> &'static str { "{{token.name}}" }
+  #[doc(hidden)] fn td_tag(&self) -> Option<&str> {
+    self.td_tag.as_deref()
+  }
   fn to_json(&self) -> RTDResult<String> { Ok(serde_json::to_string(self)?) }
 }
 {% if token.blood and token.blood | to_snake != token.name | to_snake %}
@@ -39,6 +45,10 @@ pub struct RTD{{struct_name}}Builder {
 
 impl RTD{{struct_name}}Builder {
   pub fn build(&self) -> {{struct_name}} { self.inner.clone() }
+  pub fn td_tag<T: AsRef<str>>(&mut self, tag: T) -> &mut Self {
+    self.inner.td_tag = Some(tag.as_ref().to_string());
+    self
+  }
 {% for field in token.arguments %}
 {% set builder_field_type=td_arg(arg=field, token=token, builder_arg=true) %} {% set sign_name = field.sign_name | td_safe_field %} {% set is_optional = is_optional(type_=td_arg(arg=field, token=token)) %} {% set is_builder_ref = is_builder_ref(type_ = builder_field_type) %}
   pub fn {{sign_name}}{%if is_builder_ref%}<T: AsRef<{% if builder_field_type == 'String' %}str{% else %}{{builder_field_type}}{% endif %}>>{%endif%}(&mut self, {{sign_name}}: {%if is_builder_ref%}T{%else%}{{builder_field_type}}{%endif%}) -> &mut Self {
