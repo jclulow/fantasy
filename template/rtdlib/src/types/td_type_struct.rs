@@ -9,7 +9,7 @@ pub struct {{struct_name}} {
   #[serde(rename(serialize = "@extra", deserialize = "@extra"))]
   td_tag: Option<Extra>,
   {% for field in token.arguments %}/// {{field.description}}
-  {% if field.sign_name == 'type' %}#[serde(rename(serialize = "type", deserialize = "type"))] {% endif %}{{field.sign_name | td_safe_field}}: {{td_arg(arg=field, token=token)}},
+  {% if field.sign_type == 'int64' %}#[serde(deserialize_with = "serde_aux::field_attributes::deserialize_number_from_string")] {% endif %}{% if field.sign_name == 'type' %}#[serde(rename(serialize = "type", deserialize = "type"))] {% endif %}{{field.sign_name | td_safe_field}}: {{td_arg(arg=field, token=token)}},
   {% endfor %}
 }
 
